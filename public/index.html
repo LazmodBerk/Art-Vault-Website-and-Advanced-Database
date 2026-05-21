@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang='tr' data-theme='dark'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>ArtVault - Online Sanat Galerisi</title>
+<link rel='preconnect' href='https://fonts.googleapis.com'>
+<link href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='/css/style.css'>
+</head>
+<body>
+<div id='toast-container'></div>
+<div id='app'>
+  <nav class='navbar' id='navbar'>
+    <div class='nav-brand'><a href='/' onclick='navigate(event,"/")'>✦ ArtVault</a></div>
+    <div class='nav-links' id='nav-links'>
+      <a href='/gallery' onclick='navigate(event,"/gallery")'>Galeri</a>
+      <a href='/events' onclick='navigate(event,"/events")'>Etkinlikler</a>
+      <a href='/favorites' onclick='navigate(event,"/favorites")'>Favoriler</a>
+      <a href='/compare' onclick='navigate(event,"/compare")'>Karşılaştır</a>
+      <a href='/campaigns' onclick='navigate(event,"/campaigns")'>Fırsatlar</a>
+      <a href='/support' onclick='navigate(event,"/support")'>Destek</a>
+    </div>
+    <div class='nav-actions'>
+      <button class='btn-icon' onclick='toggleTheme()' title='Tema'>&#9790;</button>
+      <a href='/cart' onclick='navigate(event,"/cart")' class='btn-icon cart-btn'>&#128722; <span id='cart-count' class='badge'>0</span></a>
+      <div id='nav-auth'>
+        <a href='/login' onclick='navigate(event,"/login")' class='btn btn-outline'>Giriş</a>
+        <a href='/register' onclick='navigate(event,"/register")' class='btn btn-gold'>Kayıt</a>
+      </div>
+      <div id='nav-user' style='display:none'>
+        <div class='user-menu'>
+          <img id='nav-avatar' src='/images/default-avatar.png' class='nav-avatar' onclick='toggleUserMenu()'>
+          <div class='user-dropdown' id='user-dropdown'>
+            <a href='/profile' onclick='navigate(event,"/profile")'>Profilim</a>
+            <a href='/orders' onclick='navigate(event,"/orders")'>Siparişlerim</a>
+            <a href='/reservations' onclick='navigate(event,"/reservations")'>Rezervasyonlarım</a>
+            <div id='admin-link' style='display:none'><a href='/admin' onclick='navigate(event,"/admin")'>Admin Panel</a></div>
+            <hr>
+            <a onclick='logout()' style='cursor:pointer'>Çıkış</a>
+          </div>
+        </div>
+      </div>
+      <button class='hamburger' onclick='toggleMobileMenu()'>&#9776;</button>
+    </div>
+  </nav>
+  <main id='page-content' style='padding-top:70px;min-height:calc(100vh - 70px)'><div class='spinner-container'><div class='spinner'></div></div></main>
+  <footer class='footer'>
+    <div class='footer-content'>
+      <div class='footer-brand'>✦ ArtVault<p>Premium Sanat Galerisi ve Atölye Sistemi</p></div>
+      <div class='footer-links'>
+        <h4>Keşfet</h4>
+        <a href='/gallery' onclick='navigate(event,"/gallery")'>Galeri</a>
+        <a href='/events' onclick='navigate(event,"/events")'>Etkinlikler</a>
+      </div>
+      <div class='footer-links'>
+        <h4>Hesabım</h4>
+        <a href='/profile' onclick='navigate(event,"/profile")'>Profilim</a>
+        <a href='/orders' onclick='navigate(event,"/orders")'>Siparişlerim</a>
+        <a href='/support' onclick='navigate(event,"/support")'>Destek</a>
+      </div>
+      <div class='footer-links'>
+        <h4>İletişim</h4>
+        <p>info@artvault.com</p>
+        <p>+90 212 000 0000</p>
+        <p>İstanbul, Türkiye</p>
+      </div>
+    </div>
+    <div class='footer-bottom'><p>&copy; 2026 ArtVault. Tüm hakları saklıdır.</p></div>
+  </footer>
+</div>
+
+<!-- Live Chat Widget -->
+<div id="live-chat-widget" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;">
+  <div id="chat-window" style="display:none;width:320px;height:400px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.5);margin-bottom:15px;flex-direction:column;overflow:hidden;">
+    <div style="padding:15px;background:var(--gold);color:#000;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
+      <span>💬 Canlı Destek</span>
+      <div>
+        <button onclick="endChat()" style="background:rgba(0,0,0,0.1);border:none;color:#000;font-size:.8rem;padding:4px 8px;border-radius:4px;cursor:pointer;margin-right:8px;font-weight:600;" title="Görüşmeyi Sonlandır">Sonlandır</button>
+        <button onclick="toggleChatWindow()" style="background:none;border:none;color:#000;font-size:1.2rem;cursor:pointer;">&times;</button>
+      </div>
+    </div>
+    <div id="chat-messages" style="flex:1;padding:15px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
+      <!-- Messages will be loaded here -->
+    </div>
+    <div id="chat-quick-replies" style="padding:10px 15px;display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid var(--border);background:var(--bg2);">
+      <button style="border-radius:15px;padding:4px 10px;font-size:.8rem;background:transparent;color:var(--gold);border:1px solid var(--gold);cursor:pointer;" onclick="sendQuickReply('Fiyatlar nelerdir?')">Fiyatlar</button>
+      <button style="border-radius:15px;padding:4px 10px;font-size:.8rem;background:transparent;color:var(--gold);border:1px solid var(--gold);cursor:pointer;" onclick="sendQuickReply('Nasıl Premium olurum?')">Premium Üyelik</button>
+      <button style="border-radius:15px;padding:4px 10px;font-size:.8rem;background:transparent;color:var(--gold);border:1px solid var(--gold);cursor:pointer;" onclick="sendQuickReply('İptal şartları nelerdir?')">İptal / İade</button>
+      <button style="border-radius:15px;padding:4px 10px;font-size:.8rem;background:transparent;color:var(--gold);border:1px solid var(--gold);cursor:pointer;" onclick="sendQuickReply('Kargo süreleri nedir?')">Kargo Süresi</button>
+      <button style="border-radius:15px;padding:4px 10px;font-size:.8rem;background:transparent;color:var(--gold);border:1px solid var(--gold);cursor:pointer;" onclick="sendQuickReply('İletişim bilgileriniz nedir?')">İletişim</button>
+      <button style="border-radius:15px;padding:4px 10px;font-size:.8rem;background:transparent;color:var(--gold);border:1px solid var(--gold);cursor:pointer;" onclick="sendQuickReply('Ödeme seçenekleri nelerdir?')">Ödeme / Taksit</button>
+    </div>
+    <div style="padding:10px;border-top:1px solid var(--border);display:flex;gap:5px;">
+      <input type="text" id="chat-input" class="form-control" placeholder="Mesajınızı yazın..." style="flex:1;padding:8px;border-radius:4px;" onkeypress="if(event.key==='Enter') sendChatMessage()">
+      <button onclick="sendChatMessage()" class="btn btn-gold" style="padding:8px 12px;border-radius:4px;">Gönder</button>
+    </div>
+  </div>
+  <button id="chat-toggle-btn" onclick="toggleChatWindow()" style="width:60px;height:60px;border-radius:50%;background:var(--gold);color:#000;border:none;box-shadow:0 4px 10px rgba(0,0,0,0.3);font-size:24px;cursor:pointer;display:flex;justify-content:center;align-items:center;">💬</button>
+</div>
+
+<script src='/js/api.js'></script>
+<script src='/js/router.js'></script>
+<script src='/js/pages/home.js'></script>
+<script src='/js/pages/gallery.js'></script>
+<script src='/js/pages/artwork.js'></script>
+<script src='/js/pages/events.js'></script>
+<script src='/js/pages/event-detail.js'></script>
+<script src='/js/pages/favorites.js'></script>
+<script src='/js/pages/cart.js'></script>
+<script src='/js/pages/checkout.js'></script>
+<script src='/js/pages/auth.js'></script>
+<script src='/js/pages/profile.js'></script>
+<script src='/js/pages/orders.js'></script>
+<script src='/js/pages/reservations.js'></script>
+<script src='/js/pages/support.js'></script>
+<script src='/js/pages/compare.js'></script>
+<script src='/js/pages/campaigns.js'></script>
+<script src='/js/pages/admin.js'></script>
+<script src='/js/app.js'></script>
+</body>
+</html>
